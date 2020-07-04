@@ -197,7 +197,7 @@ public class PjSipService extends Service {
                 // lucas
                 // AEC from WebRTC, SW_AEC, NS, Agressive, No VAD
                 long option = PJMEDIA_ECHO_WEBRTC | PJMEDIA_ECHO_USE_SW_ECHO | PJMEDIA_ECHO_USE_NOISE_SUPPRESSOR | PJMEDIA_ECHO_AGGRESSIVENESS_AGGRESSIVE ;
-                epConfig.getMedConfig().setEcOptions(1);
+                epConfig.getMedConfig().setEcOptions(option);
                 epConfig.getMedConfig().setEcTailLen(200);
                 epConfig.getMedConfig().setThreadCnt(2);
                 epConfig.getMedConfig().setNoVad(true);
