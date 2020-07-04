@@ -116,6 +116,21 @@ public class PjSipService extends Service {
         return null;
     }
 
+    private long PJMEDIA_ECHO_DEFAULT = 0;
+    private long PJMEDIA_ECHO_SPEEX = 1;
+    private long PJMEDIA_ECHO_SIMPLE = 2;
+    private long PJMEDIA_ECHO_WEBRTC = 3;
+    private long PJMEDIA_ECHO_ALGO_MASK = 15;
+    private long PJMEDIA_ECHO_NO_LOCK = 16;
+    private long PJMEDIA_ECHO_USE_SIMPLE_FIFO = 32;
+    private long PJMEDIA_ECHO_USE_SW_ECHO = 64;
+    private long PJMEDIA_ECHO_USE_NOISE_SUPPRESSOR = 128;
+    private long PJMEDIA_ECHO_AGGRESSIVENESS_DEFAULT = 0;
+    private long PJMEDIA_ECHO_AGGRESSIVENESS_CONSERVATIVE = 0x100;
+    private long PJMEDIA_ECHO_AGGRESSIVENESS_MODERATE = 0x200;
+    private long PJMEDIA_ECHO_AGGRESSIVENESS_AGGRESSIVE = 0x300;
+    private long PJMEDIA_ECHO_AGGRESSIVENESS_MASK = 0xF00;
+
     private void load() {
         // Load native libraries
         try {
@@ -174,9 +189,19 @@ public class PjSipService extends Service {
             epConfig.getMedConfig().setHasIoqueue(true);
             epConfig.getMedConfig().setClockRate(8000); //44800 for HQ
             epConfig.getMedConfig().setQuality(4);
-            epConfig.getMedConfig().setEcOptions(1); //ep_cfg.medConfig.ecOptions=PJMEDIA_ECHO_WEBRTC|PJMEDIA_ECHO_USE_NOISE_SUPPRESSOR|PJMEDIA_ECHO_AGGRESSIVENESS_AGGRESSIVE;
-            epConfig.getMedConfig().setEcTailLen(0); // 0 - disable echo cancellation, 200 - default
-            epConfig.getMedConfig().setThreadCnt(2);
+            if (false) {
+                epConfig.getMedConfig().setEcOptions(1); //ep_cfg.medConfig.ecOptions=PJMEDIA_ECHO_WEBRTC|PJMEDIA_ECHO_USE_NOISE_SUPPRESSOR|PJMEDIA_ECHO_AGGRESSIVENESS_AGGRESSIVE;
+                epConfig.getMedConfig().setEcTailLen(0); // 0 - disable echo cancellation, 200 - default
+                epConfig.getMedConfig().setThreadCnt(2);
+            } else {
+                // lucas
+                // AEC from WebRTC, SW_AEC, NS, Agressive, No VAD
+                long option = PJMEDIA_ECHO_WEBRTC | PJMEDIA_ECHO_USE_SW_ECHO | PJMEDIA_ECHO_USE_NOISE_SUPPRESSOR | PJMEDIA_ECHO_AGGRESSIVENESS_AGGRESSIVE ;
+                epConfig.getMedConfig().setEcOptions(1);
+                epConfig.getMedConfig().setEcTailLen(200);
+                epConfig.getMedConfig().setThreadCnt(2);
+                epConfig.getMedConfig().setNoVad(true);
+            }
             
             
             mEndpoint.libInit(epConfig);
@@ -1013,7 +1038,13 @@ public class PjSipService extends Service {
                     mWifiLock.acquire();
 
                     if (callState == pjsip_inv_state.PJSIP_INV_STATE_EARLY || callState == pjsip_inv_state.PJSIP_INV_STATE_CONFIRMED) {
-                        mAudioManager.setMode(AudioManager.MODE_IN_CALL);
+                        if (false) {
+                            mAudioManager.setMode(AudioManager.MODE_IN_CALL);
+                        } else {
+                            // lucas
+                            // let pjsip deal with Android SDK
+                            mAudioManager.setMode(AudioManager.MODE_IN_COMMUNICATION);
+                        }
                     }
                 }
             });
