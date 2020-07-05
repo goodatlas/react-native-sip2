@@ -192,8 +192,15 @@ public class PjSipCall extends Call {
                     AudDevManager mgr = account.getService().getAudDevManager();
 
                     try {
-                        audioMedia.adjustRxLevel((float) 1.5);
-                        audioMedia.adjustTxLevel((float) 1.5);
+                        if  (false) {
+                            audioMedia.adjustRxLevel((float) 1.5);
+                            audioMedia.adjustTxLevel((float) 1.5);
+                        }  else {
+                            // lucas
+                            // https://trac.pjsip.org/repos/wiki/media-flow
+                            audioMedia.adjustRxLevel((float) 4.0); // to far-end loud-speaker
+                            audioMedia.adjustTxLevel((float) 1.5); // to near-end loud-speaker
+                        }
                     } catch (Exception exc) {
                         Log.e(TAG, "An error while adjusting audio levels", exc);
                     }
