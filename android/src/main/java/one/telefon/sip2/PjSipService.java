@@ -195,10 +195,11 @@ public class PjSipService extends Service {
                 epConfig.getMedConfig().setThreadCnt(2);
             } else {
                 // lucas
-                // AEC from WebRTC, SW_AEC, NS, Agressive, No VAD
-                long option = PJMEDIA_ECHO_WEBRTC | PJMEDIA_ECHO_USE_SW_ECHO | PJMEDIA_ECHO_USE_NOISE_SUPPRESSOR | PJMEDIA_ECHO_AGGRESSIVENESS_AGGRESSIVE ;
+                // Speex AEC, NS, Aggressive, No VAD
+                // Speex AGC is working, AEC is deactivated by EcTailLen(0)
+                long option = PJMEDIA_ECHO_SPEEX | PJMEDIA_ECHO_USE_NOISE_SUPPRESSOR | PJMEDIA_ECHO_AGGRESSIVENESS_AGGRESSIVE ;
                 epConfig.getMedConfig().setEcOptions(option);
-                epConfig.getMedConfig().setEcTailLen(200);
+                epConfig.getMedConfig().setEcTailLen(0);
                 epConfig.getMedConfig().setThreadCnt(2);
                 epConfig.getMedConfig().setNoVad(true);
             }
@@ -807,6 +808,9 @@ public class PjSipService extends Service {
 
     private void handleCallUseSpeaker(Intent intent) {
         try {
+            // lucas:
+            // MODE_IN_COMMUNICATION activates HW AEC
+            mAudioManager.setMode(AudioManager.MODE_IN_COMMUNICATION);
             mAudioManager.setSpeakerphoneOn(true);
             mUseSpeaker = true;
 
@@ -822,6 +826,9 @@ public class PjSipService extends Service {
 
     private void handleCallUseEarpiece(Intent intent) {
         try {
+            // lucas
+            // MODE_IN_CALL deactivates HW AEC
+            mAudioManager.setMode(AudioManager.MODE_IN_CALL);
             mAudioManager.setSpeakerphoneOn(false);
             mUseSpeaker = false;
 
@@ -1038,13 +1045,8 @@ public class PjSipService extends Service {
                     mWifiLock.acquire();
 
                     if (callState == pjsip_inv_state.PJSIP_INV_STATE_EARLY || callState == pjsip_inv_state.PJSIP_INV_STATE_CONFIRMED) {
-                        if (false) {
-                            mAudioManager.setMode(AudioManager.MODE_IN_CALL);
-                        } else {
-                            // lucas
-                            // let pjsip deal with Android SDK
-                            mAudioManager.setMode(AudioManager.MODE_IN_COMMUNICATION);
-                        }
+                        // HW AEC deactivate
+                        mAudioManager.setMode(AudioManager.MODE_IN_CALL);
                     }
                 }
             });
