@@ -197,9 +197,9 @@ public class PjSipService extends Service {
                 // lucas
                 // Speex AEC, NS, Aggressive, No VAD
                 // Speex AGC is working, AEC is deactivated by EcTailLen(0)
-                long option = PJMEDIA_ECHO_SPEEX | PJMEDIA_ECHO_USE_NOISE_SUPPRESSOR | PJMEDIA_ECHO_AGGRESSIVENESS_AGGRESSIVE ;
+                long option = PJMEDIA_ECHO_WEBRTC | PJMEDIA_ECHO_USE_NOISE_SUPPRESSOR | PJMEDIA_ECHO_AGGRESSIVENESS_AGGRESSIVE ;
                 epConfig.getMedConfig().setEcOptions(option);
-                epConfig.getMedConfig().setEcTailLen(0);
+                epConfig.getMedConfig().setEcTailLen(100);
                 epConfig.getMedConfig().setThreadCnt(2);
                 epConfig.getMedConfig().setNoVad(true);
             }
@@ -809,8 +809,8 @@ public class PjSipService extends Service {
     private void handleCallUseSpeaker(Intent intent) {
         try {
             // lucas:
-            // MODE_IN_COMMUNICATION activates HW AEC
-            mAudioManager.setMode(AudioManager.MODE_IN_COMMUNICATION);
+            // MODE_IN_CALL: AEC by PjSIP
+            //mAudioManager.setMode(AudioManager.MODE_IN_COMMUNICATION);
             mAudioManager.setSpeakerphoneOn(true);
             mUseSpeaker = true;
 
@@ -828,7 +828,7 @@ public class PjSipService extends Service {
         try {
             // lucas
             // MODE_IN_CALL deactivates HW AEC
-            mAudioManager.setMode(AudioManager.MODE_IN_CALL);
+            //mAudioManager.setMode(AudioManager.MODE_IN_CALL);
             mAudioManager.setSpeakerphoneOn(false);
             mUseSpeaker = false;
 

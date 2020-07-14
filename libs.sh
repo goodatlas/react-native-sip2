@@ -2,8 +2,9 @@
 
 set -e
 
-VERSION="v3.0.0"
-URL="https://github.com/telefon-one/react-native-sip2-builder/releases/download/${VERSION}/release.tar.gz"
+VERSION="2.9"
+#URL="https://github.com/telefon-one/react-native-sip2-builder/releases/download/${VERSION}/release.tar.gz"
+URL="https://github.com/goodatlas/react-native-sip2-builder/releases/download/2.9/switch_android_pjsip_2p9.zip"
 LOCK=".libs.lock"
 DEST=".libs.tar.gz"
 DOWNLOAD=true
