@@ -199,7 +199,8 @@ public class PjSipService extends Service {
                 // Speex AGC is working, AEC is deactivated by EcTailLen(0)
                 long option = PJMEDIA_ECHO_WEBRTC | PJMEDIA_ECHO_USE_NOISE_SUPPRESSOR | PJMEDIA_ECHO_AGGRESSIVENESS_AGGRESSIVE ;
                 epConfig.getMedConfig().setEcOptions(option);
-                epConfig.getMedConfig().setEcTailLen(100);
+                epConfig.getMedConfig().setEcTailLen(30);
+                epConfig.getMedConfig().setChannelCount(1);
                 epConfig.getMedConfig().setThreadCnt(2);
                 epConfig.getMedConfig().setNoVad(true);
             }
@@ -1045,6 +1046,7 @@ public class PjSipService extends Service {
                     mWifiLock.acquire();
 
                     if (callState == pjsip_inv_state.PJSIP_INV_STATE_EARLY || callState == pjsip_inv_state.PJSIP_INV_STATE_CONFIRMED) {
+                        // lucas
                         // HW AEC deactivate
                         mAudioManager.setMode(AudioManager.MODE_IN_CALL);
                     }

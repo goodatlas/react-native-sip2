@@ -198,7 +198,7 @@ public class PjSipCall extends Call {
                         }  else {
                             // lucas
                             // https://trac.pjsip.org/repos/wiki/media-flow
-                            audioMedia.adjustRxLevel((float) 4.0); // to far-end loud-speaker
+                            audioMedia.adjustRxLevel((float) 3.0); // to far-end loud-speaker
                             audioMedia.adjustTxLevel((float) 1.5); // to near-end loud-speaker
                         }
                     } catch (Exception exc) {
