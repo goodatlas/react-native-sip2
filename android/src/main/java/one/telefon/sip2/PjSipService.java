@@ -197,14 +197,15 @@ public class PjSipService extends Service {
                 // lucas
                 // Speex AEC, NS, Aggressive, No VAD
                 // Speex AGC is working, AEC is deactivated by EcTailLen(0)
-                long option = PJMEDIA_ECHO_WEBRTC | PJMEDIA_ECHO_USE_NOISE_SUPPRESSOR | PJMEDIA_ECHO_AGGRESSIVENESS_AGGRESSIVE ;
+                long option = PJMEDIA_ECHO_WEBRTC| PJMEDIA_ECHO_USE_SW_ECHO | PJMEDIA_ECHO_USE_NOISE_SUPPRESSOR | PJMEDIA_ECHO_AGGRESSIVENESS_AGGRESSIVE;
+                //long option = PJMEDIA_ECHO_DEFAULT | PJMEDIA_ECHO_USE_SW_ECHO;
+
                 epConfig.getMedConfig().setEcOptions(option);
                 epConfig.getMedConfig().setEcTailLen(30);
                 epConfig.getMedConfig().setChannelCount(1);
                 epConfig.getMedConfig().setThreadCnt(2);
                 epConfig.getMedConfig().setNoVad(true);
             }
-            
             
             mEndpoint.libInit(epConfig);
 
@@ -229,6 +230,9 @@ public class PjSipService extends Service {
                 mTlsTransportId = mEndpoint.transportCreate(pjsip_transport_type_e.PJSIP_TRANSPORT_TLS, transportConfig);
                 mTrash.add(transportConfig);
             }
+
+
+
 
             mEndpoint.libStart();
         } catch (Exception e) {
@@ -529,7 +533,14 @@ public class PjSipService extends Service {
 
         cfg.setIdUri(idUri);
         cfg.getRegConfig().setRegistrarUri(regUri);
+        //lucas
+        // RegOnAdd:
+        //   Specify whether the account should register as soon as it is added to the UA.
+        //   Application can set this to PJ_FALSE and control the registration manually with pjsua_acc_set_registration().
         cfg.getRegConfig().setRegisterOnAdd(configuration.isRegOnAdd());
+        // registration timeout was not applied, so update it
+        cfg.getRegConfig().setTimeoutSec(configuration.getRegTimeout());
+        //
         cfg.getSipConfig().getAuthCreds().add(cred);
 
         cfg.getVideoConfig().getRateControlBandwidth();
@@ -907,7 +918,6 @@ public class PjSipService extends Service {
     private void handleChangeCodecSettings(Intent intent) {
         try {
             Bundle codecSettings = intent.getExtras();
-
             // -----
             if (codecSettings != null) {
                 for (String key : codecSettings.keySet()) {
