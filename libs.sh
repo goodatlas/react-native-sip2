@@ -44,7 +44,7 @@ fi
 
 
 # iOS
-VERSION="3.5.1"
+VERSION="3.5.2"
 URL="https://github.com/goodatlas/Vialer-pjsip-iOS/archive/${VERSION}.zip"
 LOCK=".libs.ios.lock"
 DEST=".libs.ios.zip"
